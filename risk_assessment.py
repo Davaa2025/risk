@@ -2,9 +2,6 @@ import streamlit as st
 import pandas as pd
 from datetime import date
 import io
-from openpyxl import Workbook
-from openpyxl.styles import PatternFill, Font
-from openpyxl.drawing.image import Image as XLImage
 from PIL import Image
 import os
 
@@ -138,42 +135,4 @@ if st.session_state.entries:
     # Export buttons remain unchanged (using updated column names)
 
 
-    # Excel Export
-    if st.button("📥 Export Table to Excel"):
-        wb = Workbook()
-        ws = wb.active
-        ws.title = "Risk Assessment"
-
-        logo_img = XLImage(logo_path)
-        logo_img.width = 200
-        logo_img.height = 60
-        ws.add_image(logo_img, "A1")
-
-        fills = {
-            "High": PatternFill(start_color="FFCCCC", end_color="FFCCCC", fill_type="solid"),
-            "Medium": PatternFill(start_color="FFF8B0", end_color="FFF8B0", fill_type="solid"),
-            "Low": PatternFill(start_color="D6F5D6", end_color="D6F5D6", fill_type="solid")
-        }
-
-        for col_idx, col_name in enumerate(df.columns, 1):
-            cell = ws.cell(row=5, column=col_idx, value=col_name)
-            cell.font = Font(bold=True)
-
-        for row_idx, row in df.iterrows():
-            for col_idx, col_name in enumerate(df.columns, 1):
-                cell = ws.cell(row=row_idx + 6, column=col_idx, value=row[col_name])
-                if col_name == "RiskRating" and row[col_name] in fills:
-                    cell.fill = fills[row[col_name]]
-
-        excel_buffer = io.BytesIO()
-        wb.save(excel_buffer)
-        excel_buffer.seek(0)
-
-        st.download_button(
-            label="📄 Download Excel File",
-            data=excel_buffer,
-            file_name=f"risk_assessment_{date.today()}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
-
+    
