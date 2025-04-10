@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from datetime import date
 import io
-from PIL import Image
 import os
 
 st.set_page_config(page_title="Risk Assessment Form", layout="centered")
@@ -19,13 +18,6 @@ if not st.session_state.authenticated:
         st.rerun()
     else:
         st.stop()
-
-# ✅ Define logo path
-logo_path = r"C:\Users\davaa\Desktop\logo.jpg"
-
-# ✅ Display logo in the UI
-logo = Image.open(logo_path)
-st.image(logo, width=300)
 
 # Risk matrix
 risk_matrix = pd.DataFrame([
