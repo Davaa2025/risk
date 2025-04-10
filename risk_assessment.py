@@ -5,7 +5,6 @@ import io
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from openpyxl.drawing.image import Image as XLImage
-from fpdf import FPDF
 from PIL import Image
 import os
 
@@ -177,54 +176,4 @@ if st.session_state.entries:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-# PDF Export with Mongolian font support
-    if st.button("📝 Export Table to PDF"):
-        from fpdf import FPDF
 
-        class PDF(FPDF):
-            def header(self):
-                self.set_font("DejaVu", 'B', 12)
-
-        pdf = FPDF()
-        pdf.add_page()
-        font_path = r"C:\Users\davaa\Desktop\NotoSans-Regular.ttf"
-        pdf.add_font('Noto', '', font_path, uni=True)
-        pdf.add_font('Noto', 'B', font_path, uni=True)  # if no bold version, reuse regular
-
-        pdf.set_font("Noto", '', 10)
-        pdf.image(logo_path, x=10, y=8, w=50)
-        pdf.ln(25)
-
-        pdf.set_font("Noto", 'B', 14)
-        pdf.cell(200, 10, txt="Эрсдэлийн үнэлгээний тайлан", ln=True, align='C')
-
-        pdf.set_font("Noto", '', 10)
-        pdf.cell(200, 10, txt=f"Огноо: {date.today()}", ln=True, align='C')
-
-
-        col_widths = [30, 20, 40, 30, 25, 20, 50]
-        pdf.set_font("Noto", 'B', 10)
-        for i, col in enumerate(expected_cols):
-            width = col_widths[i] if i < len(col_widths) else 30
-            pdf.cell(width, 8, col, border=1, align='C')
-        pdf.ln()
-
-        pdf.set_font("Noto", '', 9)
-        for _, row in df.iterrows():
-            for i, col in enumerate(expected_cols):
-                val = str(row[col])
-                width = col_widths[i] if i < len(col_widths) else 30
-                pdf.cell(width, 8, val, border=1)
-            pdf.ln()
-
-        pdf_buffer = io.BytesIO()
-        pdf_output = pdf.output(dest='S').encode('utf-8')
-        pdf_buffer.write(pdf_output)
-        pdf_buffer.seek(0)
-
-        st.download_button(
-            label="📄 PDF татах",
-            data=pdf_buffer,
-            file_name=f"risk_assessment_{date.today()}.pdf",
-            mime="application/pdf"
-        )
